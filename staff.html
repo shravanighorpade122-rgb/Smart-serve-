@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kitchen Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .order {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 15px;
+        }
+
+        .item {
+            margin: 10px 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>👨‍🍳 Kitchen Dashboard</h1>
+
+    <div id="orderBox">
+        <p>No new orders.</p>
+    </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    onSnapshot,
+    doc,
+    updateDoc
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+    apiKey: "तुझा Firebase API key",
+    authDomain: "smart-digital-menu-d512b.firebaseapp.com",
+    projectId: "smart-digital-menu-d512b",
+    storageBucket: "smart-digital-menu-d512b.firebasestorage.app",
+    messagingSenderId: "574476415832",
+    appId: "1:574476415832:web:269b3b3a8ba4a2dcffeb2d",
+    measurementId: "G-YXVM6T9EJ9"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+onSnapshot(collection(db, "Order"), function(snapshot) {
+
+    let html = "";
+
+    snapshot.forEach(function(orderDoc) {
+
+        let order = orderDoc.data();
+
+        let itemsHTML = "";
+
+        if (Array.isArray(order.items)) {
+            order.items.forEach(function(item) {
+                itemsHTML +=
+                    "<div class='item'>🍽️ " +
+                    item.name +
+                    " - ₹" +
+                    item.price +
+                    "</div>";
+            });
+        }
+
+        html +=
+            "<div class='order'>" +
+            "<h2>🔔 New Order</h2>" +
+            "<p><b>Order ID:</b> " +
+            (order.orderID || orderDoc.id) +
+            "</p>" +
+            "<p><b>Customer:</b> " +
+            (order.customer || "Unknown") +
+            "</p>" +
+            "<p><b>Table:</b> " +
+            (order.tableNumber || order.table || "Unknown") +
+            "</p>" +
+            "<h3>Items</h3>" +
+            itemsHTML +
+            "<h3>💰 Total: ₹" +
+            (order.total || 0) +
+            "</h3>" +
+            "<p><b>Order Status:</b></p>" +
+
+            "<select onchange=\"changeStatus('" +
+            orderDoc.id +
+            "', this.value)\">" +
+
+            "<option " + (order.status === "Received" ? "selected" : "") + ">Received</option>" +
+            "<option " + (order.status === "Preparing" ? "selected" : "") + ">Preparing</option>" +
+            "<option " + (order.status === "Ready" ? "selected" : "") + ">Ready</option>" +
+
+            "</select>" +
+            "</div>";
+    });
+
+    document.getElementById("orderBox").innerHTML =
+        html || "<p>No new orders.</p>";
+
+});
+
+
+window.changeStatus = async function(orderID, status) {
+
+    try {
+
+        await updateDoc(
+            doc(db, "Order", orderID),
+            {
+                status: status
+            }
+        );
+
+        alert("Status changed to: " + status);
+
+    } catch (error) {
+
+        console.error(error);
+        alert("Status update failed.");
+
+    }
+
+};
+
+</script>
+
+</body>
+
+</html>

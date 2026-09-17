@@ -1,0 +1,331 @@
+ 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Digital Menu</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .menu {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .item, #cart, #customer {
+            background: white;
+            padding: 18px;
+            margin: 15px 0;
+            border-radius: 15px;
+        }
+
+        .item h2 {
+            margin: 0 0 10px;
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        button {
+            background: black;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .order-btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        #orderMessage {
+            font-weight: bold;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="menu">
+
+    <h1>🍽️ Smart Digital Menu</h1>
+
+    <!-- MENU -->
+
+    <div class="item">
+        <h2>🍔 Veg Burger</h2>
+        <p>Fresh and tasty veg burger</p>
+        <p class="price">₹80</p>
+        <button onclick="addToCart('Veg Burger', 80)">
+            Add
+        </button>
+    </div>
+
+    <div class="item">
+        <h2>🍟 French Fries</h2>
+        <p>Crispy golden fries</p>
+        <p class="price">₹50</p>
+        <button onclick="addToCart('French Fries', 50)">
+            Add
+        </button>
+    </div>
+
+    <div class="item">
+        <h2>🥤 Cold Drink</h2>
+        <p>Chilled soft drink</p>
+        <p class="price">₹30</p>
+        <button onclick="addToCart('Cold Drink', 30)">
+            Add
+        </button>
+    </div>
+
+
+    <!-- CUSTOMER DETAILS -->
+
+    <div id="customer">
+
+        <h2>👤 Customer Details</h2>
+
+        <label>Customer Name</label>
+        <input
+            type="text"
+            id="customerName"
+            placeholder="Enter your name"
+        >
+
+        <label>Table Number</label>
+        <input
+            type="number"
+            id="tableNumber"
+            placeholder="Enter table number"
+        >
+
+    </div>
+
+<div id="statusBox" style="background:white; padding:18px; margin:15px 0; border-radius:15px;">
+    <h2>📦 Order Status</h2>
+    <p id="liveStatus">Place an order to see status.</p>
+</div>
+    <!-- CART -->
+
+    <div id="cart">
+
+        <h2>🛒 Your Cart</h2>
+
+        <div id="cartItems">
+            <p>Your cart is empty.</p>
+        </div>
+
+        <p id="total">Total: ₹0</p>
+
+        <button class="order-btn" onclick="placeOrder()">
+            Place Order
+        </button>
+
+        <p id="orderMessage"></p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    let cart = [];
+    let total = 0;
+
+    function addToCart(name, price) {
+
+        cart.push({
+            name: name,
+            price: price
+        });
+
+        total = total + price;
+
+        displayCart();
+    }
+
+
+    function displayCart() {
+
+        let cartItems = document.getElementById("cartItems");
+
+        cartItems.innerHTML = "";
+
+        cart.forEach(function(item, index) {
+
+            cartItems.innerHTML +=
+                "<div>" +
+                (index + 1) +
+                ". " +
+                item.name +
+                " - ₹" +
+                item.price +
+                "</div>";
+
+        });
+
+        document.getElementById("total").innerHTML =
+            "Total: ₹" + total;
+    }
+
+
+    function placeOrder() {
+
+        let name =
+            document.getElementById("customerName").value;
+
+        let table =
+            document.getElementById("tableNumber").value;
+
+
+        if (name === "" || table === "") {
+
+            alert("Please enter your name and table number.");
+            return;
+        }
+
+
+        if (cart.length === 0) {
+
+            alert("Please add an item first.");
+            return;
+        }
+
+
+        let orderID =
+            "ORD" + Math.floor(1000 + Math.random() * 9000);
+let order = {
+    orderID: orderID,
+    customer: name,
+    table: table,
+    items: cart,
+    total: total
+};
+
+window.saveOrderToFirebase(order);
+window.watchOrderStatus(orderID);
+        document.getElementById("orderMessage").innerHTML =
+
+            "✅ Order Placed Successfully!<br>" +
+            "🧾 Order ID: " + orderID + "<br>" +
+            "👤 Customer: " + name + "<br>" +
+            "🪑 Table: " + table + "<br>" +
+            "💰 Total: ₹" + total;
+
+    }
+    </script>
+
+    <script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    query,
+    where,
+    onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+    apiKey: "तुझा Firebase API key",
+    authDomain: "smart-digital-menu-d512b.firebaseapp.com",
+    projectId: "smart-digital-menu-d512b",
+    storageBucket: "smart-digital-menu-d512b.firebasestorage.app",
+    messagingSenderId: "574476415832",
+    appId: "1:574476415832:web:269b3b3a8ba4a2dcffeb2d",
+    measurementId: "G-YXVM6T9EJ9"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+window.saveOrderToFirebase = async function(order) {
+
+    try {
+
+        await addDoc(collection(db, "Order"), {
+
+            orderID: order.orderID,
+            customer: order.customer,
+            tableNumber: order.table,
+            items: order.items,
+            total: order.total,
+            status: "Received",
+            createdAt: serverTimestamp()
+
+        });
+
+        console.log("✅ Order saved to Firebase");
+
+    } catch (error) {
+
+        console.error("Firebase Error:", error);
+        alert("Order Firebase मध्ये save झाला नाही.");
+
+    }
+
+};
+
+
+window.watchOrderStatus = function(orderID) {
+
+    const q = query(
+        collection(db, "Order"),
+        where("orderID", "==", orderID)
+    );
+
+    onSnapshot(q, function(snapshot) {
+
+        snapshot.forEach(function(orderDoc) {
+
+            let order = orderDoc.data();
+
+            document.getElementById("liveStatus").innerHTML =
+                "🔄 Current Status: <b>" +
+                (order.status || "Received") +
+                "</b>";
+
+        });
+
+    });
+
+};
+
+</script>
+ 
+<script src="script.js"></script>
+</body>
+</html>
