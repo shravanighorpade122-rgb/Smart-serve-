@@ -1,10 +1,12 @@
- 
 <!DOCTYPE html>
 <html>
+
 <head>
+
     <title>Smart Digital Menu</title>
 
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background: #f5f5f5;
@@ -21,7 +23,10 @@
             text-align: center;
         }
 
-        .item, #cart, #customer {
+        .item,
+        #cart,
+        #customer,
+        #statusBox {
             background: white;
             padding: 18px;
             margin: 15px 0;
@@ -46,6 +51,11 @@
             font-size: 16px;
         }
 
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
         input {
             width: 90%;
             padding: 12px;
@@ -64,42 +74,115 @@
             font-weight: bold;
             line-height: 1.8;
         }
+
+        .availability {
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .cart-item {
+            background: #f5f5f5;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+        }
+
+        .quantity-btn {
+            padding: 7px 12px;
+            margin: 3px;
+        }
+
+        .remove-btn {
+            background: #d32f2f;
+            margin-left: 8px;
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <div class="menu">
+
 
     <h1>🍽️ Smart Digital Menu</h1>
 
-    <!-- MENU -->
+
+    <!-- VEG BURGER -->
 
     <div class="item">
+
         <h2>🍔 Veg Burger</h2>
+
         <p>Fresh and tasty veg burger</p>
+
         <p class="price">₹80</p>
-        <button onclick="addToCart('Veg Burger', 80)">
+
+        <p
+            id="burgerAvailability"
+            class="availability">
+            🟢 Available
+        </p>
+
+        <button
+            id="burgerButton"
+            onclick="addToCart('Veg Burger', 80)">
             Add
         </button>
+
     </div>
 
+
+    <!-- FRENCH FRIES -->
+
     <div class="item">
+
         <h2>🍟 French Fries</h2>
+
         <p>Crispy golden fries</p>
+
         <p class="price">₹50</p>
-        <button onclick="addToCart('French Fries', 50)">
+
+        <p
+            id="friesAvailability"
+            class="availability">
+            🟢 Available
+        </p>
+
+        <button
+            id="friesButton"
+            onclick="addToCart('French Fries', 50)">
             Add
         </button>
+
     </div>
 
+
+    <!-- COLD DRINK -->
+
     <div class="item">
+
         <h2>🥤 Cold Drink</h2>
+
         <p>Chilled soft drink</p>
+
         <p class="price">₹30</p>
-        <button onclick="addToCart('Cold Drink', 30)">
+
+        <p
+            id="drinkAvailability"
+            class="availability">
+            🟢 Available
+        </p>
+
+        <button
+            id="drinkButton"
+            onclick="addToCart('Cold Drink', 30)">
             Add
         </button>
+
     </div>
 
 
@@ -110,6 +193,7 @@
         <h2>👤 Customer Details</h2>
 
         <label>Customer Name</label>
+
         <input
             type="text"
             id="customerName"
@@ -117,6 +201,7 @@
         >
 
         <label>Table Number</label>
+
         <input
             type="number"
             id="tableNumber"
@@ -125,10 +210,28 @@
 
     </div>
 
-<div id="statusBox" style="background:white; padding:18px; margin:15px 0; border-radius:15px;">
-    <h2>📦 Order Status</h2>
-    <p id="liveStatus">Place an order to see status.</p>
-</div>
+
+    <!-- LIVE STATUS -->
+
+    <div id="statusBox">
+
+        <h2>📦 Order Status</h2>
+
+        <p id="liveStatus">
+            Place an order to see status.
+        </p>
+
+        <p id="queuePosition">
+            👥 Orders Ahead: -
+        </p>
+
+        <p id="estimatedWait">
+            ⏱️ Estimated Wait: -
+        </p>
+
+    </div>
+
+
     <!-- CART -->
 
     <div id="cart">
@@ -136,200 +239,767 @@
         <h2>🛒 Your Cart</h2>
 
         <div id="cartItems">
+
             <p>Your cart is empty.</p>
+
         </div>
 
-        <p id="total">Total: ₹0</p>
+        <p id="total">
+            Total: ₹0
+        </p>
 
-        <button class="order-btn" onclick="placeOrder()">
+        <button
+            class="order-btn"
+            onclick="placeOrder()">
+
             Place Order
+
         </button>
 
         <p id="orderMessage"></p>
 
     </div>
 
+
 </div>
 
 
 <script>
 
-    let cart = [];
-    let total = 0;
+let cart = [];
 
-    function addToCart(name, price) {
-
-        cart.push({
-            name: name,
-            price: price
-        });
-
-        total = total + price;
-
-        displayCart();
-    }
+let total = 0;
 
 
-    function displayCart() {
+/* ADD TO CART */
 
-        let cartItems = document.getElementById("cartItems");
+function addToCart(name, price) {
 
-        cartItems.innerHTML = "";
+    let existingItem = cart.find(function(item) {
 
-        cart.forEach(function(item, index) {
-
-            cartItems.innerHTML +=
-                "<div>" +
-                (index + 1) +
-                ". " +
-                item.name +
-                " - ₹" +
-                item.price +
-                "</div>";
-
-        });
-
-        document.getElementById("total").innerHTML =
-            "Total: ₹" + total;
-    }
-
-
-    function placeOrder() {
-
-        let name =
-            document.getElementById("customerName").value;
-
-        let table =
-            document.getElementById("tableNumber").value;
-
-
-        if (name === "" || table === "") {
-
-            alert("Please enter your name and table number.");
-            return;
-        }
-
-
-        if (cart.length === 0) {
-
-            alert("Please add an item first.");
-            return;
-        }
-
-
-        let orderID =
-            "ORD" + Math.floor(1000 + Math.random() * 9000);
-let order = {
-    orderID: orderID,
-    customer: name,
-    table: table,
-    items: cart,
-    total: total
-};
-
-window.saveOrderToFirebase(order);
-window.watchOrderStatus(orderID);
-        document.getElementById("orderMessage").innerHTML =
-
-            "✅ Order Placed Successfully!<br>" +
-            "🧾 Order ID: " + orderID + "<br>" +
-            "👤 Customer: " + name + "<br>" +
-            "🪑 Table: " + table + "<br>" +
-            "💰 Total: ₹" + total;
-
-    }
-    </script>
-
-    <script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp,
-    query,
-    where,
-    onSnapshot
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-
-
-     
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAORtOIursj2e8iBgz9gg1AozC5xKYjLbo",
-  authDomain: "smart-digital-menu-d512b.firebaseapp.com",
-  projectId: "smart-digital-menu-d512b",
-  storageBucket: "smart-digital-menu-d512b.firebasestorage.app",
-  messagingSenderId: "574476415832",
-  appId: "1:574476415832:web:269b3b3a8ba4a2dcffeb2d",
-  measurementId: "G-YXVM6T9EJ9"
-};
-
-
-
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-
-window.saveOrderToFirebase = async function(order) {
-
-    try {
-
-        await addDoc(collection(db, "Order"), {
-
-            orderID: order.orderID,
-            customer: order.customer,
-            tableNumber: order.table,
-            items: order.items,
-            total: order.total,
-            status: "Received",
-            createdAt: serverTimestamp()
-
-        });
-
-        console.log("✅ Order saved to Firebase");
-
-    } catch (error) {
-
-        console.error("Firebase Error:", error);
-        alert("Order Firebase मध्ये save झाला नाही.");
-
-    }
-
-};
-
-
-window.watchOrderStatus = function(orderID) {
-
-    const q = query(
-        collection(db, "Order"),
-        where("orderID", "==", orderID)
-    );
-
-    onSnapshot(q, function(snapshot) {
-
-        snapshot.forEach(function(orderDoc) {
-
-            let order = orderDoc.data();
-
-            document.getElementById("liveStatus").innerHTML =
-                "🔄 Current Status: <b>" +
-                (order.status || "Received") +
-                "</b>";
-
-        });
+        return item.name === name;
 
     });
 
-};
+
+    if (existingItem) {
+
+        existingItem.quantity++;
+
+    } else {
+
+        cart.push({
+
+            name: name,
+
+            price: price,
+
+            quantity: 1
+
+        });
+
+    }
+
+
+    calculateTotal();
+
+    displayCart();
+
+}
+
+
+/* INCREASE */
+
+function increaseQuantity(index) {
+
+    cart[index].quantity++;
+
+    calculateTotal();
+
+    displayCart();
+
+}
+
+
+/* DECREASE */
+
+function decreaseQuantity(index) {
+
+    if (cart[index].quantity > 1) {
+
+        cart[index].quantity--;
+
+    } else {
+
+        cart.splice(index, 1);
+
+    }
+
+
+    calculateTotal();
+
+    displayCart();
+
+}
+
+
+/* REMOVE */
+
+function removeItem(index) {
+
+    cart.splice(index, 1);
+
+    calculateTotal();
+
+    displayCart();
+
+}
+
+
+/* CALCULATE TOTAL */
+
+function calculateTotal() {
+
+    total = 0;
+
+
+    cart.forEach(function(item) {
+
+        total +=
+            item.price *
+            item.quantity;
+
+    });
+
+}
+
+
+/* DISPLAY CART */
+
+function displayCart() {
+
+    let cartItems =
+        document.getElementById("cartItems");
+
+
+    cartItems.innerHTML = "";
+
+
+    if (cart.length === 0) {
+
+        cartItems.innerHTML =
+            "<p>Your cart is empty.</p>";
+
+    }
+
+
+    cart.forEach(function(item, index) {
+
+        cartItems.innerHTML +=
+
+            "<div class='cart-item'>" +
+
+            "<b>" +
+            item.name +
+            "</b>" +
+
+            " - ₹" +
+            item.price +
+
+            "<br><br>" +
+
+            "<button class='quantity-btn' " +
+            "onclick='decreaseQuantity(" +
+            index +
+            ")'>" +
+            "➖" +
+            "</button>" +
+
+            "<b style='margin:0 10px;'>" +
+            item.quantity +
+            "</b>" +
+
+            "<button class='quantity-btn' " +
+            "onclick='increaseQuantity(" +
+            index +
+            ")'>" +
+            "➕" +
+            "</button>" +
+
+            "<button class='remove-btn' " +
+            "onclick='removeItem(" +
+            index +
+            ")'>" +
+            "🗑️ Remove" +
+            "</button>" +
+
+            "</div>";
+
+    });
+
+
+    document.getElementById("total").innerHTML =
+        "Total: ₹" + total;
+
+}
+
+
+/* PLACE ORDER */
+
+function placeOrder() {
+
+    let name =
+        document.getElementById(
+            "customerName"
+        ).value.trim();
+
+
+    let table =
+        document.getElementById(
+            "tableNumber"
+        ).value.trim();
+
+
+    if (name === "" || table === "") {
+
+        alert(
+            "Please enter your name and table number."
+        );
+
+        return;
+
+    }
+
+
+    if (cart.length === 0) {
+
+        alert(
+            "Please add an item first."
+        );
+
+        return;
+
+    }
+
+
+    let orderID =
+        "ORD" +
+        Math.floor(
+            1000 +
+            Math.random() * 9000
+        );
+
+
+    let order = {
+
+        orderID: orderID,
+
+        customer: name,
+
+        table: table,
+
+        items: cart,
+
+        total: total
+
+    };
+
+
+    window.saveOrderToFirebase(order);
+
+    window.watchOrderStatus(orderID);
+
+
+    document.getElementById(
+        "orderMessage"
+    ).innerHTML =
+
+        "✅ Order Placed Successfully!<br>" +
+
+        "🧾 Order ID: " +
+        orderID +
+        "<br>" +
+
+        "👤 Customer: " +
+        name +
+        "<br>" +
+
+        "🪑 Table: " +
+        table +
+        "<br>" +
+
+        "💰 Total: ₹" +
+        total;
+
+}
+
 
 </script>
- 
-<script src="script.js"></script>
+
+
+<script type="module">
+
+
+/* FIREBASE IMPORTS */
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+
+    getFirestore,
+
+    collection,
+
+    addDoc,
+
+    serverTimestamp,
+
+    onSnapshot
+
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+/* FIREBASE CONFIG */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAORtOIursj2e8iBgz9gg1AozC5xKYjLbo",
+
+    authDomain:
+        "smart-digital-menu-d512b.firebaseapp.com",
+
+    projectId:
+        "smart-digital-menu-d512b",
+
+    storageBucket:
+        "smart-digital-menu-d512b.firebasestorage.app",
+
+    messagingSenderId:
+        "574476415832",
+
+    appId:
+        "1:574476415832:web:269b3b3a8ba4a2dcffeb2d",
+
+    measurementId:
+        "G-YXVM6T9EJ9"
+
+};
+
+
+/* INITIALIZE FIREBASE */
+
+const app =
+    initializeApp(firebaseConfig);
+
+
+const db =
+    getFirestore(app);
+
+
+/* SAVE ORDER */
+
+window.saveOrderToFirebase =
+async function(order) {
+
+    try {
+
+        await addDoc(
+
+            collection(
+                db,
+                "Order"
+            ),
+
+            {
+
+                orderID:
+                    order.orderID,
+
+                customer:
+                    order.customer,
+
+                tableNumber:
+                    order.table,
+
+                items:
+                    order.items,
+
+                total:
+                    order.total,
+
+                status:
+                    "Received",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        console.log(
+            "✅ Order saved to Firebase"
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Firebase Error:",
+            error
+        );
+
+
+        alert(
+            "Order Firebase मध्ये save झाला नाही."
+        );
+
+    }
+
+};
+
+
+/* LIVE ORDER STATUS + QUEUE */
+
+window.watchOrderStatus =
+function(orderID) {
+
+
+    onSnapshot(
+
+        collection(
+            db,
+            "Order"
+        ),
+
+        function(snapshot) {
+
+
+            let currentOrder =
+                null;
+
+
+            let allOrders =
+                [];
+
+
+            snapshot.forEach(
+                function(orderDoc) {
+
+
+                    let order =
+                        orderDoc.data();
+
+
+                    order.firebaseID =
+                        orderDoc.id;
+
+
+                    allOrders.push(
+                        order
+                    );
+
+
+                    if (
+                        order.orderID ===
+                        orderID
+                    ) {
+
+                        currentOrder =
+                            order;
+
+                    }
+
+                }
+            );
+
+
+            if (!currentOrder) {
+
+                document.getElementById(
+                    "liveStatus"
+                ).innerHTML =
+                    "⏳ Updating order...";
+
+                return;
+
+            }
+
+
+            let status =
+                currentOrder.status ||
+                "Received";
+
+
+            /* READY */
+
+            if (status === "Ready") {
+
+
+                document.getElementById(
+                    "liveStatus"
+                ).innerHTML =
+                    "🟢 Your Order is Ready!";
+
+
+                document.getElementById(
+                    "queuePosition"
+                ).innerHTML =
+                    "👥 Orders Ahead: 0";
+
+
+                document.getElementById(
+                    "estimatedWait"
+                ).innerHTML =
+                    "⏱️ Estimated Wait: 0 min";
+
+
+                return;
+
+            }
+
+
+            /* CURRENT ORDER TIME */
+
+            let currentTime =
+                null;
+
+
+            if (
+                currentOrder.createdAt &&
+                currentOrder.createdAt.toMillis
+            ) {
+
+                currentTime =
+                    currentOrder.createdAt.toMillis();
+
+            }
+
+
+            let ordersAhead = 0;
+
+
+            if (currentTime !== null) {
+
+
+                allOrders.forEach(
+                    function(order) {
+
+
+                        if (
+
+                            order.orderID !==
+                            orderID &&
+
+                            order.status !==
+                            "Ready" &&
+
+                            order.createdAt &&
+
+                            order.createdAt.toMillis
+
+                        ) {
+
+
+                            let orderTime =
+                                order.createdAt.toMillis();
+
+
+                            if (
+                                orderTime <
+                                currentTime
+                            ) {
+
+                                ordersAhead++;
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            let estimatedWait =
+                ordersAhead * 5;
+
+
+            document.getElementById(
+                "liveStatus"
+            ).innerHTML =
+
+                "🔄 Current Status: <b>" +
+                status +
+                "</b>";
+
+
+            document.getElementById(
+                "queuePosition"
+            ).innerHTML =
+
+                "👥 Orders Ahead: " +
+                ordersAhead;
+
+
+            document.getElementById(
+                "estimatedWait"
+            ).innerHTML =
+
+                "⏱️ Estimated Wait: ~" +
+                estimatedWait +
+                " min";
+
+
+        }
+
+    );
+
+};
+
+
+/* FOOD AVAILABILITY */
+
+const foodItems = {
+
+
+    "Veg Burger": {
+
+        text:
+            "burgerAvailability",
+
+        button:
+            "burgerButton"
+
+    },
+
+
+    "French Fries": {
+
+        text:
+            "friesAvailability",
+
+        button:
+            "friesButton"
+
+    },
+
+
+    "Cold Drink": {
+
+        text:
+            "drinkAvailability",
+
+        button:
+            "drinkButton"
+
+    }
+
+};
+
+
+/* FOOD AVAILABILITY LISTENER */
+
+onSnapshot(
+
+    collection(
+        db,
+        "FoodAvailability"
+    ),
+
+    function(snapshot) {
+
+
+        snapshot.forEach(
+            function(foodDoc) {
+
+
+                let food =
+                    foodDoc.data();
+
+
+                let item =
+                    foodItems[
+                        food.name
+                    ];
+
+
+                if (!item) {
+
+                    return;
+
+                }
+
+
+                let textElement =
+                    document.getElementById(
+                        item.text
+                    );
+
+
+                let buttonElement =
+                    document.getElementById(
+                        item.button
+                    );
+
+
+                if (
+                    food.availability ===
+                    "Out of Stock"
+                ) {
+
+
+                    textElement.innerHTML =
+                        "🔴 Out of Stock";
+
+
+                    buttonElement.disabled =
+                        true;
+
+
+                    buttonElement.innerText =
+                        "Out of Stock";
+
+
+                } else {
+
+
+                    textElement.innerHTML =
+                        "🟢 Available";
+
+
+                    buttonElement.disabled =
+                        false;
+
+
+                    buttonElement.innerText =
+                        "Add";
+
+                }
+
+            }
+        );
+
+    }
+
+);
+
+
+</script>
+
+
 </body>
+
 </html>
