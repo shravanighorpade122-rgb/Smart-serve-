@@ -1,44 +1,239 @@
-
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>Kitchen Dashboard</title>
+    <title>SmartServe Staff Dashboard</title>
 
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background: #f5f5f5;
-            padding: 20px;
+            padding: 15px;
+            margin: 0;
         }
 
         .dashboard {
-            max-width: 500px;
+            max-width: 650px;
             margin: auto;
         }
 
         h1 {
             text-align: center;
+            color: #333;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        /* ANALYTICS */
+
+        .analytics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .box h2 {
+            margin: 8px 0;
+            color: #f57c00;
+        }
+
+        .box p {
+            margin: 0;
+            color: #666;
+        }
+
+        /* SALES ANALYTICS */
+
+        .period {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .period h2 {
+            margin-top: 0;
+        }
+
+        .period-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .period-box {
+            background: #fff3e0;
+            padding: 14px 5px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .period-box h3 {
+            margin: 5px 0;
+            color: #f57c00;
+        }
+
+        .period-box p {
+            margin: 0;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* FOOD AVAILABILITY */
+
+        .availability {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .availability h2 {
+            margin-top: 0;
+        }
+
+        .food-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f8f8;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            gap: 10px;
+        }
+
+        .food-name {
+            font-weight: bold;
+        }
+
+        .food-control select {
+            width: auto;
+            margin: 0;
+            padding: 8px;
+        }
+
+        /* ORDER SECTIONS */
+
+        .order-section {
+            background: white;
+            padding: 18px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .received-title {
+            color: #d68910;
+        }
+
+        .preparing-title {
+            color: #e67e22;
+        }
+
+        .ready-title {
+            color: #27ae60;
         }
 
         .order {
-            background: white;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 15px;
+            background: #f8f8f8;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 12px;
+            border-left: 5px solid #f57c00;
+        }
+
+        .received-order {
+            border-left-color: #d68910;
+        }
+
+        .preparing-order {
+            border-left-color: #e67e22;
+        }
+
+        .ready-order {
+            border-left-color: #27ae60;
+        }
+
+        .order h2 {
+            margin-top: 0;
+            color: #f57c00;
+        }
+
+        .ready-order h2 {
+            color: #27ae60;
         }
 
         .item {
-            margin: 10px 0;
+            background: white;
+            padding: 10px;
+            margin: 7px 0;
+            border-radius: 8px;
         }
 
         select {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
+            margin-top: 8px;
             font-size: 16px;
             border-radius: 8px;
+            border: 1px solid #ccc;
         }
+
+        .empty {
+            text-align: center;
+            color: #888;
+            padding: 15px;
+        }
+
+        .count {
+            font-size: 15px;
+            color: #777;
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .period-row {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .food-control {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .food-control select {
+                width: 100%;
+            }
+
+        }
+
     </style>
 </head>
 
@@ -46,13 +241,197 @@
 
 <div class="dashboard">
 
-    <h1>👨‍🍳 Kitchen Dashboard</h1>
+    <h1>👨‍🍳 Staff Dashboard</h1>
 
-    <div id="orderBox">
-        <p>No new orders.</p>
+    <p class="subtitle">
+        SmartServe - Live Canteen Management
+    </p>
+
+
+    <!-- ANALYTICS -->
+
+    <div class="analytics">
+
+        <div class="box">
+            <p>📦 Total Orders</p>
+            <h2 id="totalOrders">0</h2>
+        </div>
+
+        <div class="box">
+            <p>💰 Total Sales</p>
+            <h2 id="totalSales">₹0</h2>
+        </div>
+
+        <div class="box">
+            <p>🔥 Active Orders</p>
+            <h2 id="activeOrders">0</h2>
+        </div>
+
+        <div class="box">
+            <p>🍔 Top Item</p>
+            <h2 id="topItem">-</h2>
+        </div>
+
+    </div>
+
+
+    <!-- SALES ANALYTICS -->
+
+    <div class="period">
+
+        <h2>📊 Sales Analytics</h2>
+
+        <div class="period-row">
+
+            <div class="period-box">
+                <p>Today</p>
+                <h3 id="todayOrders">0</h3>
+                <p id="todaySales">₹0</p>
+            </div>
+
+            <div class="period-box">
+                <p>This Week</p>
+                <h3 id="weekOrders">0</h3>
+                <p id="weekSales">₹0</p>
+            </div>
+
+            <div class="period-box">
+                <p>This Month</p>
+                <h3 id="monthOrders">0</h3>
+                <p id="monthSales">₹0</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOD AVAILABILITY -->
+
+    <div class="availability">
+
+        <h2>🍽️ Food Availability</h2>
+
+        <div class="food-control">
+
+            <span class="food-name">
+                🍔 Veg Burger
+            </span>
+
+            <select
+                id="VegBurgerAvailability"
+                onchange="changeFoodAvailability('Veg Burger', this.value)">
+
+                <option value="Available">
+                    🟢 Available
+                </option>
+
+                <option value="Out of Stock">
+                    🔴 Out of Stock
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="food-control">
+
+            <span class="food-name">
+                🍟 French Fries
+            </span>
+
+            <select
+                id="FrenchFriesAvailability"
+                onchange="changeFoodAvailability('French Fries', this.value)">
+
+                <option value="Available">
+                    🟢 Available
+                </option>
+
+                <option value="Out of Stock">
+                    🔴 Out of Stock
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="food-control">
+
+            <span class="food-name">
+                🥤 Cold Drink
+            </span>
+
+            <select
+                id="ColdDrinkAvailability"
+                onchange="changeFoodAvailability('Cold Drink', this.value)">
+
+                <option value="Available">
+                    🟢 Available
+                </option>
+
+                <option value="Out of Stock">
+                    🔴 Out of Stock
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECEIVED ORDERS -->
+
+    <div class="order-section">
+
+        <h2 class="section-title received-title">
+            🟡 Received Orders
+            <span class="count" id="receivedCount">(0)</span>
+        </h2>
+
+        <div id="receivedOrders">
+            <p class="empty">No received orders.</p>
+        </div>
+
+    </div>
+
+
+    <!-- PREPARING ORDERS -->
+
+    <div class="order-section">
+
+        <h2 class="section-title preparing-title">
+            🟠 Preparing Orders
+            <span class="count" id="preparingCount">(0)</span>
+        </h2>
+
+        <div id="preparingOrders">
+            <p class="empty">No preparing orders.</p>
+        </div>
+
+    </div>
+
+
+    <!-- READY ORDERS -->
+
+    <div class="order-section">
+
+        <h2 class="section-title ready-title">
+            🟢 Ready Orders
+            <span class="count" id="readyCount">(0)</span>
+        </h2>
+
+        <div id="readyOrders">
+            <p class="empty">No ready orders.</p>
+        </div>
+
     </div>
 
 </div>
+
 
 <script type="module">
 
@@ -64,85 +443,405 @@ import {
     collection,
     onSnapshot,
     doc,
-    updateDoc
+    updateDoc,
+    setDoc
 }
 from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 const firebaseConfig = {
-    apiKey:"तुझा Firebase API key" ,
-    authDomain: "smart-digital-menu-d512b.firebaseapp.com",
-    projectId: "smart-digital-menu-d512b",
-    storageBucket: "smart-digital-menu-d512b.firebasestorage.app",
-    messagingSenderId: "574476415832",
-    appId: "1:574476415832:web:269b3b3a8ba4a2dcffeb2d",
-    measurementId: "G-YXVM6T9EJ9"
+
+    apiKey: "AIzaSyAORtOIursj2e8iBgz9gg1AozC5xKYjLbo",
+
+    authDomain:
+        "smart-digital-menu-d512b.firebaseapp.com",
+
+    projectId:
+        "smart-digital-menu-d512b",
+
+    storageBucket:
+        "smart-digital-menu-d512b.firebasestorage.app",
+
+    messagingSenderId:
+        "574476415832",
+
+    appId:
+        "1:574476415832:web:269b3b3a8ba4a2dcffeb2d",
+
+    measurementId:
+        "G-YXVM6T9EJ9"
+
 };
 
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
+let allOrders = [];
 
-onSnapshot(collection(db, "Order"), function(snapshot) {
 
-    let html = "";
+/* =========================
+   REAL-TIME ORDERS
+========================= */
 
-    snapshot.forEach(function(orderDoc) {
+onSnapshot(
+    collection(db, "Order"),
+    function(snapshot) {
 
-        let order = orderDoc.data();
+        allOrders = [];
 
-        let itemsHTML = "";
+        let receivedHTML = "";
+        let preparingHTML = "";
+        let readyHTML = "";
 
-        if (Array.isArray(order.items)) {
-            order.items.forEach(function(item) {
-                itemsHTML +=
-                    "<div class='item'>🍽️ " +
-                    item.name +
-                    " - ₹" +
-                    item.price +
-                    "</div>";
-            });
+        let receivedCount = 0;
+        let preparingCount = 0;
+        let readyCount = 0;
+
+
+        snapshot.forEach(function(orderDoc) {
+
+            let order = orderDoc.data();
+
+            order.firebaseID = orderDoc.id;
+
+            allOrders.push(order);
+
+
+            let itemsHTML = "";
+
+
+            if (Array.isArray(order.items)) {
+
+                order.items.forEach(function(item) {
+
+                    itemsHTML +=
+                        "<div class='item'>" +
+                        "🍽️ " +
+                        item.name +
+                        " - ₹" +
+                        item.price +
+                        "</div>";
+
+                });
+
+            }
+
+
+            let orderHTML =
+
+                "<div class='order " +
+                getOrderClass(order.status) +
+                "'>" +
+
+                "<h2>🔔 Order</h2>" +
+
+                "<p><b>Order ID:</b> " +
+                (order.orderID || orderDoc.id) +
+                "</p>" +
+
+                "<p><b>Customer:</b> " +
+                (order.customer || "Unknown") +
+                "</p>" +
+
+                "<p><b>Table:</b> " +
+                (order.tableNumber ||
+                 order.table ||
+                 "Unknown") +
+                "</p>" +
+
+                "<h3>🍽️ Items</h3>" +
+
+                itemsHTML +
+
+                "<h3>💰 Total: ₹" +
+                (order.total || 0) +
+                "</h3>" +
+
+                "<p><b>Order Status:</b></p>" +
+
+                "<select onchange=\"changeStatus('" +
+                orderDoc.id +
+                "', this.value)\">" +
+
+                "<option value='Received' " +
+                (order.status === "Received"
+                    ? "selected" : "") +
+                ">Received</option>" +
+
+                "<option value='Preparing' " +
+                (order.status === "Preparing"
+                    ? "selected" : "") +
+                ">Preparing</option>" +
+
+                "<option value='Ready' " +
+                (order.status === "Ready"
+                    ? "selected" : "") +
+                ">Ready</option>" +
+
+                "</select>" +
+
+                "</div>";
+
+
+            /* STATUS SECTION */
+
+            if (order.status === "Preparing") {
+
+                preparingHTML += orderHTML;
+
+                preparingCount++;
+
+            }
+
+            else if (order.status === "Ready") {
+
+                readyHTML += orderHTML;
+
+                readyCount++;
+
+            }
+
+            else {
+
+                receivedHTML += orderHTML;
+
+                receivedCount++;
+
+            }
+
+        });
+
+
+        document.getElementById("receivedOrders").innerHTML =
+            receivedHTML ||
+            "<p class='empty'>No received orders.</p>";
+
+
+        document.getElementById("preparingOrders").innerHTML =
+            preparingHTML ||
+            "<p class='empty'>No preparing orders.</p>";
+
+
+        document.getElementById("readyOrders").innerHTML =
+            readyHTML ||
+            "<p class='empty'>No ready orders.</p>";
+
+
+        document.getElementById("receivedCount").innerText =
+            "(" + receivedCount + ")";
+
+
+        document.getElementById("preparingCount").innerText =
+            "(" + preparingCount + ")";
+
+
+        document.getElementById("readyCount").innerText =
+            "(" + readyCount + ")";
+
+
+        updateAnalytics();
+
+    }
+
+);
+
+
+/* ORDER COLOR */
+
+function getOrderClass(status) {
+
+    if (status === "Preparing") {
+        return "preparing-order";
+    }
+
+    if (status === "Ready") {
+        return "ready-order";
+    }
+
+    return "received-order";
+
+}
+
+
+/* =========================
+   ANALYTICS
+========================= */
+
+function updateAnalytics() {
+
+    let totalOrders = allOrders.length;
+
+    let totalSales = 0;
+
+    let activeOrders = 0;
+
+    let foodCount = {};
+
+    let todayOrders = 0;
+    let todaySales = 0;
+
+    let weekOrders = 0;
+    let weekSales = 0;
+
+    let monthOrders = 0;
+    let monthSales = 0;
+
+
+    const now = new Date();
+
+
+    let todayStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+
+    let day = now.getDay();
+
+    let weekStart = new Date(now);
+
+    weekStart.setDate(
+        now.getDate() - day
+    );
+
+    weekStart.setHours(0, 0, 0, 0);
+
+
+    let monthStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+    );
+
+
+    allOrders.forEach(function(order) {
+
+        let amount =
+            Number(order.total || 0);
+
+        totalSales += amount;
+
+
+        if (order.status !== "Ready") {
+            activeOrders++;
         }
 
-        html +=
-            "<div class='order'>" +
-            "<h2>🔔 New Order</h2>" +
-            "<p><b>Order ID:</b> " +
-            (order.orderID || orderDoc.id) +
-            "</p>" +
-            "<p><b>Customer:</b> " +
-            (order.customer || "Unknown") +
-            "</p>" +
-            "<p><b>Table:</b> " +
-            (order.tableNumber || order.table || "Unknown") +
-            "</p>" +
-            "<h3>Items</h3>" +
-            itemsHTML +
-            "<h3>💰 Total: ₹" +
-            (order.total || 0) +
-            "</h3>" +
-            "<p><b>Order Status:</b></p>" +
 
-            "<select onchange=\"changeStatus('" +
-            orderDoc.id +
-            "', this.value)\">" +
+        if (Array.isArray(order.items)) {
 
-            "<option " + (order.status === "Received" ? "selected" : "") + ">Received</option>" +
-            "<option " + (order.status === "Preparing" ? "selected" : "") + ">Preparing</option>" +
-            "<option " + (order.status === "Ready" ? "selected" : "") + ">Ready</option>" +
+            order.items.forEach(function(item) {
 
-            "</select>" +
-            "</div>";
+                if (!foodCount[item.name]) {
+                    foodCount[item.name] = 0;
+                }
+
+                foodCount[item.name]++;
+
+            });
+
+        }
+
+
+        if (
+            order.createdAt &&
+            order.createdAt.toDate
+        ) {
+
+            let orderDate =
+                order.createdAt.toDate();
+
+
+            if (orderDate >= todayStart) {
+
+                todayOrders++;
+                todaySales += amount;
+
+            }
+
+
+            if (orderDate >= weekStart) {
+
+                weekOrders++;
+                weekSales += amount;
+
+            }
+
+
+            if (orderDate >= monthStart) {
+
+                monthOrders++;
+                monthSales += amount;
+
+            }
+
+        }
+
     });
 
-    document.getElementById("orderBox").innerHTML =
-        html || "<p>No new orders.</p>";
 
-});
+    let topItem = "-";
+
+    let highest = 0;
 
 
-window.changeStatus = async function(orderID, status) {
+    for (let item in foodCount) {
+
+        if (foodCount[item] > highest) {
+
+            highest = foodCount[item];
+
+            topItem = item;
+
+        }
+
+    }
+
+
+    document.getElementById("totalOrders").innerText =
+        totalOrders;
+
+    document.getElementById("totalSales").innerText =
+        "₹" + totalSales;
+
+    document.getElementById("activeOrders").innerText =
+        activeOrders;
+
+    document.getElementById("topItem").innerText =
+        topItem;
+
+
+    document.getElementById("todayOrders").innerText =
+        todayOrders + " Orders";
+
+    document.getElementById("todaySales").innerText =
+        "₹" + todaySales;
+
+
+    document.getElementById("weekOrders").innerText =
+        weekOrders + " Orders";
+
+    document.getElementById("weekSales").innerText =
+        "₹" + weekSales;
+
+
+    document.getElementById("monthOrders").innerText =
+        monthOrders + " Orders";
+
+    document.getElementById("monthSales").innerText =
+        "₹" + monthSales;
+
+}
+
+
+/* =========================
+   CHANGE ORDER STATUS
+========================= */
+
+window.changeStatus =
+async function(orderID, status) {
 
     try {
 
@@ -153,16 +852,94 @@ window.changeStatus = async function(orderID, status) {
             }
         );
 
-        alert("Status changed to: " + status);
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(error);
+
         alert("Status update failed.");
 
     }
 
 };
+
+
+/* =========================
+   FOOD AVAILABILITY
+========================= */
+
+window.changeFoodAvailability =
+async function(foodName, availability) {
+
+    try {
+
+        await setDoc(
+            doc(db, "FoodAvailability", foodName),
+            {
+                name: foodName,
+                availability: availability
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Food availability update failed."
+        );
+
+    }
+
+};
+
+
+/* =========================
+   LOAD FOOD AVAILABILITY
+========================= */
+
+onSnapshot(
+    collection(db, "FoodAvailability"),
+    function(snapshot) {
+
+        snapshot.forEach(function(foodDoc) {
+
+            let food = foodDoc.data();
+
+            if (food.name === "Veg Burger") {
+
+                document.getElementById(
+                    "VegBurgerAvailability"
+                ).value = food.availability;
+
+            }
+
+
+            if (food.name === "French Fries") {
+
+                document.getElementById(
+                    "FrenchFriesAvailability"
+                ).value = food.availability;
+
+            }
+
+
+            if (food.name === "Cold Drink") {
+
+                document.getElementById(
+                    "ColdDrinkAvailability"
+                ).value = food.availability;
+
+            }
+
+        });
+
+    }
+
+);
 
 </script>
 
